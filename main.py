@@ -211,25 +211,52 @@ while running:
     # PAUSE Screen
     while running and REMAININGTIME > 0 and paused:
 
-        screen.fill((52, 78, 91, 127))
+       menu_state = "main"
+        resume_img = pygame.image.load("old/freegames/images/button_resume.png").convert_alpha()
+        quit_img = pygame.image.load("old/freegames/images/button_quit.png").convert_alpha()
 
-        text("Game is currently paused, press space to unpause.", 50, 10, font="Arial", size=30)
+        # create button instances
+        resume_button = button.Button(304, 125, resume_img, 1)
+        quit_button = button.Button(336, 375, quit_img, 1)
 
-        text("(Perhaps add a Resume, Load Save, Main Menu, and Quit Button here)", 50, 250, font="Arial", size=22)
 
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    paused = not paused
-            if event.type == pygame.QUIT:
-                running = False
+        # game loop
+        run = True
+        while run:
 
-        pygame.display.flip()
+            screen.fill((52, 78, 91))
+
+            # check if game is paused
+            if paused == True:
+                # check menu state
+                if menu_state == "main":
+                    # draw pause screen buttons
+                    if resume_button.draw(screen):
+                        paused = False
+                        run = False
+                    if quit_button.draw(screen):
+                        run = False
+                        pygame.quit()
+                        main_state = 'off'
+
+            else:
+                menu_state = 'not'
+
+            # event handler
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        paused = True
+                if event.type == pygame.QUIT:
+                    run = False
+
+            pygame.display.update()
 
         ms = clock.tick_busy_loop(60)
 
         if paused:
             MAXTIME += (ms / 1000)
+
 
     # GAME OVER Screen
     while running and REMAININGTIME <= 0 and paused:
